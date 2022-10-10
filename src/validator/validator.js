@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
 
 const isValidName = function (value) {
-  // console.log(/^[A-Za-z ]$/.test(value))
-
-  return (/^[A-Za-z ]$/.test(value))
+  return ((/^[a-zA-Z ]{2,20}$/).test(value))
 };
 
 const isValid = function (value) {

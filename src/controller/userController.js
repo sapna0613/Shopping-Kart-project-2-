@@ -75,12 +75,12 @@ const createUser = async (req, res) => {
     }
     // console.log(valid.isValidName(fname))
     if (!valid.isValidName(fname)) {
-      // console.log(fname)
+
       return res.status(400).send({ status: false, message: " Fname is Not Valid" })
     }
     //---------------------------Validation Lname------------------------------------------//
     if (!valid.isValid(lname)) {
-      return res.status(400).send({ status: false, message: " Fname is Not Valid." })
+      return res.status(400).send({ status: false, message: " Lname is Not Valid." })
     }
     if (!valid.isValidName(lname)) {
       return res.status(400).send({ status: false, message: " Lname is Not Valid" })
