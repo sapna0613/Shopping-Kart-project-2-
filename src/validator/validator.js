@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
 const isValidName = function (value) {
-  if (  /^[A-Z ][a-z ]\D*$/.test(value)){return true;}
-   return false;
+  // console.log(/^[A-Za-z ]$/.test(value))
+
+  return (/^[A-Za-z ]$/.test(value))
 };
 
 const isValid = function (value) {
