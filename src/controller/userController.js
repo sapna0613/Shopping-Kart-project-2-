@@ -124,7 +124,7 @@ const createUser = async (req, res) => {
 
     let savedData=await userModel.create(data);
 
-    return res.status(201).send({ status: false, message: "User Successfully created", data: savedData })
+    return res.status(201).send({ status: true, message: "User Successfully created", data: savedData })
 
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
