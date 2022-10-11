@@ -30,6 +30,7 @@ const createUser = async (req, res) => {
     } catch (error) {
       return res.status(400).send({ status: false, message: "address must be an object" });
     }
+    
     requiredField = ["shipping", "billing"]
 
     for (field of requiredField) {
@@ -70,6 +71,7 @@ const createUser = async (req, res) => {
 
 
     //---------------------------Validation Fname------------------------------------------//
+    fname=fname.trim()
     if (!valid.isValid(fname)) {
       return res.status(400).send({ status: false, message: " Fname is Not Valid." })
     }
@@ -79,6 +81,7 @@ const createUser = async (req, res) => {
       return res.status(400).send({ status: false, message: " Fname is Not Valid" })
     }
     //---------------------------Validation Lname------------------------------------------//
+    lname=lname.trim()
     if (!valid.isValid(lname)) {
       return res.status(400).send({ status: false, message: " Lname is Not Valid." })
     }
@@ -86,8 +89,9 @@ const createUser = async (req, res) => {
       return res.status(400).send({ status: false, message: " Lname is Not Valid" })
     }
     //---------------------------Validation Email------------------------------------------//
+    email=email.trim()
     if (!valid.isValid(email)) {
-      return res.status(400).send({ status: false, message: "Email is Not Valid." })
+      return res.status(400).send({ status: false, message: "Email is Not Valid."})
     }
     if (!valid.isValidEmail(email)) {
       return res.status(400).send({ status: false, message: " Email is Not Valid" })
@@ -97,10 +101,11 @@ const createUser = async (req, res) => {
       return res.status(400).send({ status: false, message: "Please provide unique email" })
     }
     //---------------------------Phone------------------------------------------------------//
+    phone=phone.trim()
     if (!valid.isValid(phone)) {
       return res.status(400).send({ status: false, message: "Phone is Not Valid." })
     }
-    if (!valid.isValidpin(phone)) {
+    if (!valid.isValidMobile(phone)) {
       return res.status(400).send({ status: false, message: "Phone is Not Valid" })
     }
     let phoneIsUnique=await userModel.findOne({phone:phone})
@@ -108,17 +113,19 @@ const createUser = async (req, res) => {
       return res.status(400).send({ status: false, message: "Please provide unique phone" })
     }
     //----------------------------Password---------------------------------------------------//
+    password=password.trim()
     if (!valid.isValidPassword(password)) {
       return res.status(400).send({ status: false, message: "Password is Not Valid" })
     }
+
     const saltRounds = 10;
     bcrypt.hash(password, saltRounds, function(err, hash) {
       data.password=hash;
       // console.log(hash)
     });
     //--------------------------- Profile Image------------------------------------------//
-    // console.log(req.body.profileImage)
-    if (!files[0]) {
+    console.log(files)
+    if (!files) {
       return res.status(400).send({ status: false, message: "Please provide image File" })
     }
     let fileURL = await uploadFile(files[0])
