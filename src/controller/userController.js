@@ -144,6 +144,42 @@ const createUser = async (req, res) => {
 
 const loginUser = async function (req, res) {
   try {
+    let data=req.body
+    let {email,password}=data
+    if(Object.keys(data).length===0){
+      return res.status(400).send({status:false,msg:"Request Body is empty"})
+    }
+    if(!email){
+      return res.status(400).send({status:false,msg:"Email is not present in  request body"})
+    }
+    if(!password){
+      return res.status(400).send({status:false,msg:"password is not present in  request body"})
+    }
+    if(email != ""){
+      return res.status(400).send({status:false,msg:"Email is invalid"})
+    }
+    if(password != ""){
+      return res.status(400).send({status:false,msg:"password is invalid"})
+    }
+    if(!valid.isValidPassword(password)){
+      return res.status(400).send({status:false,msg:"password length is not correct"})
+    }
+    let verifyUser= await userModel.findOne({email:email})
+    if(!verifyUser){
+      return res.status(404).send({status:false,msg:"invalid credentials"})
+    }
+
+    const comparePassword = await bcrypt.compare(password, verifyUser.password)
+
+    if (!verifyUser || !comparePassword) return res.status(401).send({ status: false, message: "invalid credentials" })
+    let token =jwt.sign(
+      {
+        userId:verifyUser._id.toString(),
+        expiresIn:"7d"
+      },
+      "YousufAbhayRahulAnand"
+    )
+    return res.status(200).send({status:false,msg:"user successfuly login",data:{userId:verifyUser._id,token:token}})
 
   } catch (error) {
     res.status(500).send({ status: false, err: error.message });
