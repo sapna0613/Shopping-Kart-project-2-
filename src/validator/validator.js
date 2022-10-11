@@ -15,7 +15,7 @@ const isValidMobile = function (value) {
 };
 
 const isValidpin = function (value) {
-  if (typeof value === "string" && /[0-9]\d{5}$/gi.test(value)) return true;
+  if (typeof value === "string"|| Number && /[0-9]\d{5}$/gi.test(value)) return true;
   return false;
 };
 
@@ -30,7 +30,7 @@ const isValidPassword = function (value) {
 };
 
 const isValidPincode = function (value) {
-  if ( typeof value === "number" && /^[0-9]{6}$/.test(value)) return true;
+  if ( typeof value === Number || String && /^[0-9]{6}$/.test(value)) return true;
   return false;
 };
 

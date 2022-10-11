@@ -124,14 +124,16 @@ const createUser = async (req, res) => {
       data.password=hash;
       // console.log(hash)
     });
-    //--------------------------- Profile Image------------------------------------------//
-    if(!files || files.length>0){
+//---------------------------Validation Profile Image------------------------------------------//
+    if(!files[0] ){
       return res.status(400).send({ status: false, message: "Please provide image File" })
     }
-    let fileURL = await upload.uploadFile(files[0])
+    let fileURL = await uploadFile(files[0])
     data.profileImage = fileURL;
 
-    //---------------------------Validation Profile Image------------------------------------------//
+
+    let savedData=await userModel.create(data);
+    return res.status(201).send({ status: true, message: "User Successfully created", data: savedData })
 
 
   } catch (error) {
@@ -216,65 +218,57 @@ const checkUser=await userModel.findById(userId)
 if(!checkUser){return res.status(404).send({ status: false, msg:"User not found" })}
 
 //----------------------------- Validation Profile Image -----------------------------// 
-if(files){
-  let fileURL = await upload.uploadFile(files[0])
+if(files[0]){
+  let fileURL = await uploadFile(files[0])
   checkUser.profileImage = fileURL;
 }
 
-
 //----------------------------- Validation of fname -----------------------------//
-if (!valid.isValidName(fname)) {
+if(fname){
+  if (!valid.isValidName(fname)) {
   return res.status(400).send({ status: false, message: " Fname is Not Valid" })
 }
-checkUser.fname = fname.trim()
+checkUser.fname = fname.trim()}
 //----------------------------- Validation of lname -----------------------------//
-if (!valid.isValidName(lname)) {
+if(lname){
+  if (!valid.isValidName(lname)) {
   return res.status(400).send({ status: false, message: " lname is Not Valid" })
 } 
-checkUser.lname = lname.trim()
+checkUser.lname = lname.trim()}
 //---------------------------Validation of Email----------------------------------------//
-if (!valid.isValidEmail(email)) {
+if(email){if (!valid.isValidEmail(email)) {
   return res.status(400).send({ status: false, message: " Email is Not Valid" })
 }
 const emailData=await userModel.findOne({email:email})
 if(emailData){
   return res.status(409).send({ status: false, message: "This Email already exists" })
 }
-checkUser.email = email.trim()
+checkUser.email = email.trim()}
 //---------------------------Validation of Phone Number----------------------------------------//
-if(!valid.isValidMobile(phone)) {
+if(phone){if(!valid.isValidMobile(phone)) {
   return res.status(400).send({ status: false, message: " Phone Number is Not Valid" })
 }
 const PhoneData=await userModel.findOne({phone:phone})
 if(PhoneData){
   return res.status(409).send({ status: false, message: "This phone number already exists" })
 }
-checkUser.phone = phone.trim()
+checkUser.phone = phone.trim()}
 //---------------------------Validation of Password----------------------------------------//
-if (!valid.isValidPassword(password)) {
+if(password){
+  if (!valid.isValidPassword(password)) {
   return res.status(400).send({ status: false, message: "Password is Not Valid" })
 }
 const saltRounds = 10;
 bcrypt.hash(password, saltRounds, function(err, hash) {
-  data.password=hash;
-  
+  data.password=hash; 
 });
-checkUser.password = password
+checkUser.password = password}
  //----------------------------- Validation of Address -----------------------------//
 
 if(data.address){
   try {
     parseAddress = JSON.parse(data.address)
  
-
-// requiredField = ["shipping", "billing"]
-
-// for (field of requiredField) {
-//   if (!parseAddress[field]) {
-//     return res.status(400).send({ status: false, message: `Please provide ${field} key in address Object` })
-//   }
-// }
-
  //----------------------------- Validation of Shipping Address -----------------------------//  
 
  if (parseAddress.shipping) {
@@ -300,7 +294,7 @@ if(data.address){
 
 
   if (parseAddress.shipping.pincode) {
-      if (!valid.isValidpin(parseAddress.shipping.pincode)) {
+      if (!valid.isValidPincode(parseAddress.shipping.pincode)) {
           return res.status(400).send({ status: false, message: "Invalid Shipping pincode" })
       }}
       checkUser.address.shipping.pincode = parseAddress.shipping.pincode
@@ -347,10 +341,30 @@ const update=await userModel.findByIdAndUpdate(userId,checkUser,{new:true})
 
 
   } catch (error) {
-    res.status(500).send({ status: false, err: error.message });
+    res.status(501).send({ status: false, err: error.message });
+  }
+}
+
+//----------------------Get User Details --------------------------------------//
+
+const getUser = async function(req,res){
+  try {
+      let data = req.params.userId
+      if(!data){
+          return res.status(400).send({status: false, message:"provided something in params"})
+      }
+      if(!valid.isValidObjectId(data)){
+          return res.status(400).send({status: false, message:"UserId is invailed"})
+      }
+      const fetchUser = await userModel.findById({_id:data})
+      if(!fetchUser){
+          return res.status(404).send({status: false, message:"User is not found"})
+      }
+      return res.status(200).send({status: true, message:"User profile details",data:fetchUser})
+  }catch (error){
+      return res.status(500).send({status: false, message: error.message})
   }
 }
 
 
-
-module.exports = { createUser, loginUser, updateUser};
+module.exports = { createUser, loginUser, updateUser ,getUser};
