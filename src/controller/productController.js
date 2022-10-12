@@ -254,4 +254,34 @@ const getProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, getProduct };
+
+//-------------------getProductById-------------------
+
+const getProductById = async function (req,res){
+    try{
+        let productId = req.params.productId
+        let product = await productModel.findById(productId)
+        let data = {product}
+        res.status(200).send({ status: true,message: 'Success',data:data})
+    }
+    catch(err){
+        res.status(500).send({status:false,message: err.message})
+    }
+}
+
+
+
+
+//---------------------deleteProduct--------
+
+const deleteProduct = async function(req,res){
+    try{
+        let productId = req.params.productId
+        await productModel.findByIdAndUpdate(productId,{$set:{isDeleted:true,deletedAt:new Date()}})
+        res.status(200).send({ status: true,message:'Product deleted'})
+    }
+    catch(err){
+        res.status(500).send({status:false,message: err.message})
+    }
+}
+module.exports = { createProduct, getProduct,getProductById,deleteProduct};
