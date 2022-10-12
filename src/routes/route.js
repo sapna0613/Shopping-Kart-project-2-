@@ -16,7 +16,7 @@ router.get("/user/:userId/profile",authentication,userController.getUser)
 router.post("/products",productController.createProduct)
 
 
-// router.get("/products",use)
+router.get("/products",productController.getProduct)
 
 
 router.all("/*", (req, res) => 
