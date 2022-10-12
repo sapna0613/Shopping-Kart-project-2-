@@ -53,6 +53,10 @@ const isValidA = function (value) {
   return false;
 };
 
+const isValidSize=function (value){
+  return (["S", "XS","M","X", "L","XXL", "XL"].indexOf(value)>=0)
+}
+
 
 module.exports = { isValid, isValidRequestBody, isValidObjectId, isValidEmail, isValidPassword,
- isValidName, isValidMobile, isValidpin,isValidA,isValidDate,isValidPincode };
+ isValidName, isValidMobile, isValidpin,isValidA,isValidDate,isValidPincode,isValidSize };

@@ -14,6 +14,7 @@ const authentication = (req, res, next) => {
             return res.status(401).send({ status: false, msg: "token is required" });
         } else {
             token = token.split(' ')[1]
+            
             // console.log(token)
         }
         jwt.verify(token, "YousufAbhayRahulAnand", (error, decodedtoken) => {
@@ -39,28 +40,28 @@ const authentication = (req, res, next) => {
 // ============================================AUTHORISATION===============================================================
 
 
-const authorisation = async function (req, res, next) {
+// const authorisation = async function (req, res, next) {
 
-    try {
-        let decodedtoken = req.token
-        let userId = req.body.userId;
-        if (!mongoose.Types.ObjectId.isValid(userId)) { return res.status(400).send({ status: false, msg: "enter valid user id" }); }
-        let user = await userModel.findById(userId);
-        if (!user) {
-            return res.status(404).send({ status: false, msg: "no such user exist" });
-        }
-        if (decodedtoken.userId != userId) {
-            return res.status(403).send({ status: false, msg: "you are not authorise" })
-        }
+//     try {
+//         let decodedtoken = req.token
+//         let userId = req.body.userId;
+//         if (!mongoose.Types.ObjectId.isValid(userId)) { return res.status(400).send({ status: false, msg: "enter valid user id" }); }
+//         let user = await userModel.findById(userId);
+//         if (!user) {
+//             return res.status(404).send({ status: false, msg: "no such user exist" });
+//         }
+//         if (decodedtoken.userId != userId) {
+//             return res.status(403).send({ status: false, msg: "you are not authorise" })
+//         }
 
-        next()
-    }
-    catch (error) {
-        return res.status(500).send({ status: false, msg: error.message })
+//         next()
+//     }
+//     catch (error) {
+//         return res.status(500).send({ status: false, msg: error.message })
 
-    }
+//     }
 
-}
+// }
 
 // ======================================================AUTHORISATION BY userId=======================================================
 
@@ -93,4 +94,4 @@ const authorisationbyBId = async function (req, res, next) {
 // ==============================================================================================================================
 
 //exporting functions
-module.exports = { authentication, authorisation, authorisationbyBId }
+module.exports = { authentication, authorisationbyBId }
