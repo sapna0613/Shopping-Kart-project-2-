@@ -69,14 +69,14 @@ const getProduct = async (req, res) => {
                 return res.status(400).send({ status: false, message: "please provide valid value in priceSort" })
             }
             if (req.query.priceSort == "1") {
-                console.log(filter)
+                console.log(filter,1)
                 savedData = await productModel.find(filter).sort({ price: 1 })
             } else if (req.query.priceSort == "-1") {
-                console.log(filter);
+                console.log(filter,2);
                 savedData = await productModel.find(filter).sort({ price: -1 })
             }
         } else {
-            console.log(filter);
+            console.log(filter,3);
             savedData = await productModel.find(filter)
         }
 
