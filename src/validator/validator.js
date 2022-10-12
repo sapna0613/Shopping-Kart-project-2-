@@ -9,6 +9,14 @@ const isValid = function (value) {
   return false;
 };
 
+const isValidPrice=function(value){
+  if(value.trim().length > 0 && /[0-9]/.test(value) ){
+    return true
+  }else{
+    return false
+  }
+}
+
 const isValidMobile = function (value) {
   if (typeof value === "string" && /^[0-9]\d{9}$/gi.test(value)) return true;
   return false;
@@ -59,4 +67,4 @@ const isValidSize=function (value){
 
 
 module.exports = { isValid, isValidRequestBody, isValidObjectId, isValidEmail, isValidPassword,
- isValidName, isValidMobile, isValidpin,isValidA,isValidDate,isValidPincode,isValidSize };
+ isValidName, isValidMobile, isValidpin,isValidA,isValidDate,isValidPincode,isValidSize,isValidPrice };
