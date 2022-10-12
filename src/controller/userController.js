@@ -1,9 +1,7 @@
 const userModel = require("../models/UserModel");
 const valid = require("../validator/validator");
 const jwt = require("jsonwebtoken");
-// const moment = require("moment")
 const { uploadFile } = require("../controller/awsController");
-const { takeCoverage } = require("v8");
 const bcrypt = require('bcrypt');
 
 //===========================================create user=====================================//
@@ -202,13 +200,6 @@ const updateUser = async function (req, res) {
       return res.status(400).send({ status: false, message: "please provide data in request body" })
     }
 
-    // let requiredField = ["fname", "lname", "email", "phone", "password", "address"]
-
-    // for (field of requiredField) {
-    //   if (!data[field]) {
-    //     return res.status(400).send({ status: false, message: `Please provide ${field} in request body` })
-    //   }
-    // }
 
     //--------------------checking User -----------------------//
     if (!valid.isValidObjectId(userId)) {

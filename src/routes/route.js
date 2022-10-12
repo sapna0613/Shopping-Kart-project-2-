@@ -13,9 +13,10 @@ router.post("/register",userController.createUser)
 router.post("/login",userController.loginUser)
 router.put("/user/:userId/profile",authentication,authorisationbyBId,userController.updateUser)
 router.get("/user/:userId/profile",authentication,userController.getUser)
+router.post("/products",productController.createProduct)
 
 
-router.get("/products",use)
+// router.get("/products",use)
 
 
 router.all("/*", (req, res) => 
