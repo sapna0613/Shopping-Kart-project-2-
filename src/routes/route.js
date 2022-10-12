@@ -15,7 +15,7 @@ router.put("/user/:userId/profile",authentication,authorisationbyBId,userControl
 router.get("/user/:userId/profile",authentication,userController.getUser)
 
 
-router.get("/products",use)
+router.get("/products",productController.getProduct)
 
 
 router.all("/*", (req, res) => 
