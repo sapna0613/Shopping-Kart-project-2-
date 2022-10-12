@@ -31,7 +31,7 @@ const getProduct = async (req, res) => {
         }
 
         if (req.query.name) {
-            if (valid.isValid(req.query.name) && /^[a-zA-Z ]$/.test(value)) {
+            if (valid.isValid(req.query.name) && /^[a-zA-Z ]$/.test(req.query.name)) {
                 filter.title = { $regex: req.query.name, $options: "$i" }
             } else {
                 return res.status(400).send({ status: false, message: "please provide valid name" })
