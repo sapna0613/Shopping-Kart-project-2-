@@ -20,6 +20,9 @@ router.get("/products",productController.getProduct)
 router.put("/products/:productId",productController.updateProductById)
 
 
+router.get("/products",productController.getProduct)
+router.get("/products/:productId",productController.getProductById)
+router.delete("/product/:productId",productController.deleteProduct)
 
 
 router.all("/*", (req, res) => 
