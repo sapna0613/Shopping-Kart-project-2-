@@ -254,47 +254,48 @@ const getProduct = async (req, res) => {
     }
 };
 
-let updateSize = async function (req, res) {
+// let updateSize = async function (req, res) {
 
-    productId = req.params.productId
-    // console.log(productId);
-    let data = await productModel.findById(req.params.productId)
-    // console.log(req.query.availableSizes)
-    availableSizes = req.query.availableSizes.split(" ");
-    // console.log(availableSizes)
+//     productId = req.params.productId
+//     // console.log(productId);
+//     let data = await productModel.findById(req.params.productId)
+//     // console.log(req.query.availableSizes)
+//     availableSizes = req.query.availableSizes.split(" ");
+//     // console.log(availableSizes)
 
-    let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
+//     let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
 
-    for (let i = 0; i < availableSizes.length; i++) {
-        if (!checkSizes.includes(availableSizes[i])) {
-            return res.status(400).send({ status: false, message: "Sizes should in this ENUM only S/XS/M/X/L/XXL/XL", });
-        }
-    }
+//     for (let i = 0; i < availableSizes.length; i++) {
+//         if (!checkSizes.includes(availableSizes[i])) {
+//             return res.status(400).send({ status: false, message: "Sizes should in this ENUM only S/XS/M/X/L/XXL/XL", });
+//         }
+//     }
 
-    let newSize = [];
-    for (let j = 0; j < availableSizes.length; j++) {
-        if (newSize.includes(availableSizes[j].trim())) continue;
-        else newSize.push(availableSizes[j].trim());
-    }
+//     let newSize = [];
+//     for (let j = 0; j < availableSizes.length; j++) {
+//         if (newSize.includes(availableSizes[j].trim())) continue;
+//         else newSize.push(availableSizes[j].trim());
+//     }
 
-    // console.log(newSize,"Given")
+//     // console.log(newSize,"Given")
 
-dbavailableSizes=data.availableSizes;
-// console.log(dbavailableSizes,"DB")
-    for (ele of newSize) {
-        let index=dbavailableSizes.indexOf(ele)
-        if(index<0){
-            dbavailableSizes.push(ele)
-        }else{
-            dbavailableSizes.splice(index,1)
-        }
-    }
+// dbavailableSizes=data.availableSizes;
+// // console.log(dbavailableSizes,"DB")
+//     for (ele of newSize) {
+//         let index=dbavailableSizes.indexOf(ele)
+//         if(index<0){
+//             dbavailableSizes.push(ele)
+//         }else{
+//             dbavailableSizes.splice(index,1)
+//         }
+//     }
     
-    // console.log(dbavailableSizes)
+//     // console.log(dbavailableSizes)
 
-let savedData=await productModel.findByIdAndUpdate(productId,{availableSizes:dbavailableSizes},{new:true});
+// let savedData=await productModel.findByIdAndUpdate(productId,{availableSizes:dbavailableSizes},{new:true});
 
-return res.send({status:true,data:savedData});
-}
+// return res.send({status:true,data:savedData});
+// }
 
-module.exports = { createProduct, getProduct, updateSize };
+module.exports = { createProduct, getProduct };
+// module.exports.updateSize=updateSize
