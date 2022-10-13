@@ -19,8 +19,6 @@ router.post("/products",productController.createProduct)
 router.get("/products",productController.getProduct)
 router.put("/products/:productId",productController.updateProductById)
 
-
-router.get("/products",productController.getProduct)
 router.get("/products/:productId",productController.getProductById)
 router.delete("/product/:productId",productController.deleteProduct)
 

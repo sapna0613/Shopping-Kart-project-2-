@@ -1,11 +1,15 @@
 const productModel = require("../models/productModel");
 const valid = require("../validator/validator");
-const jwt = require("jsonwebtoken");
 const { uploadFile } = require("../controller/awsController");
 
 var nameRegex = /^[a-zA-Z\s]*$/;
 var priceRegex = /^[1-9]\d*(\.\d+)?$/;
 var installmentRegex = /\d/;
+
+
+//---------------------------- Create Product ----------------------------------------------///
+
+
 
 const createProduct = async (req, res) => {
     try {
@@ -178,6 +182,10 @@ const createProduct = async (req, res) => {
     }
 };
 
+
+
+//-------------------------------Get Product By Filter --------------------------------------------//
+
 const getProduct = async (req, res) => {
     try {
         let filter = { isDeleted: false };
@@ -259,6 +267,8 @@ const getProduct = async (req, res) => {
         res.status(500).send({ status: false, err: error.message });
     }
 };
+
+
 
 
 
@@ -403,11 +413,43 @@ const updateProduct=await productModel.findByIdAndUpdate(productId,NewObject,{ne
 return res.status(200).send({status:true ,message: "Update is successfully",data:updateProduct});
 
 
-
-
     } catch (error) {
         res.status(500).send({ status: false, err: error.message });
     }
 }
 
-module.exports = { createProduct, getProduct,updateProductById };
+
+//-----------------------------Get Product By Id --------------------------------//
+
+const getProductById = async function (req,res){
+  try{
+      let productId = req.params.productId
+      let product = await productModel.findById(productId)
+      let data = {product}
+      res.status(200).send({ status: true,message: 'Success',data:data})
+  }
+  catch(err){
+      res.status(500).send({status:false,message: err.message})
+  }
+}
+
+
+
+
+//---------------------deleteProduct----------------------------///
+
+
+const deleteProduct = async function(req,res){
+  try{
+      let productId = req.params.productId
+      await productModel.findByIdAndUpdate(productId,{$set:{isDeleted:true,deletedAt:new Date()}})
+      res.status(200).send({ status: true,message:'Product deleted'})
+  }
+  catch(err){
+      res.status(500).send({status:false,message: err.message})
+  }
+}
+
+
+
+module.exports = { createProduct, getProduct,updateProductById ,getProductById,deleteProduct};
