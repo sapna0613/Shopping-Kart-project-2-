@@ -246,7 +246,7 @@ const getProduct = async (req, res) => {
         }
 
         if (savedData.length == 0) {
-            return res.status(400).send({ status: false, message: "No data found" });
+            return res.status(404).send({ status: false, message: "No data found" });
         }
         return res.status(200).send({ status: true, data: savedData });
     } catch (error) {
