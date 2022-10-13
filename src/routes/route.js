@@ -17,10 +17,11 @@ router.post("/products",productController.createProduct)
 
 
 router.get("/products",productController.getProduct)
+router.put("/productsSize/:productId/size",productController.updateSize)
 
 
 router.all("/*", (req, res) => 
-{ console.log(req.query)
+{ console.log(req.params.productId)
     res.status(400).send({ status: false, message: "Endpoint is not correct" }) })
 
 
