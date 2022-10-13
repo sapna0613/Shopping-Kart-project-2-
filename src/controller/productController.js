@@ -1,11 +1,15 @@
 const productModel = require("../models/productModel");
 const valid = require("../validator/validator");
-const jwt = require("jsonwebtoken");
 const { uploadFile } = require("../controller/awsController");
 
 var nameRegex = /^[a-zA-Z\s]*$/;
 var priceRegex = /^[1-9]\d*(\.\d+)?$/;
 var installmentRegex = /\d/;
+
+
+//---------------------------- Create Product ----------------------------------------------///
+
+
 
 const createProduct = async (req, res) => {
     try {
@@ -135,11 +139,17 @@ const createProduct = async (req, res) => {
                     });
         }
 
-        let newSize = [];
-        for (let j = 0; j < arrayOfSizes.length; j++) {
-            if (newSize.includes(arrayOfSizes[j].trim())) continue;
-            else newSize.push(arrayOfSizes[j].trim());
-        }
+    if(isFreeShipping){
+      if(typeof(isFreeShipping)!==Boolean){
+        return res.status(400).send({ status: false, message: "Free Shipping is Must be A Boolean" });
+      }
+    }
+
+    let newSize = [];
+    for (let j = 0; j < arrayOfSizes.length; j++) {
+      if (newSize.includes(arrayOfSizes[j].trim())) continue;
+      else newSize.push(arrayOfSizes[j].trim());
+    }
 
         objectCreate.availableSizes = newSize;
 
@@ -171,6 +181,10 @@ const createProduct = async (req, res) => {
         res.status(500).send({ status: false, err: error.message });
     }
 };
+
+
+
+//-------------------------------Get Product By Filter --------------------------------------------//
 
 const getProduct = async (req, res) => {
     try {
@@ -297,5 +311,190 @@ const getProduct = async (req, res) => {
 // return res.send({status:true,data:savedData});
 // }
 
-module.exports = { createProduct, getProduct };
+// module.exports = { createProduct, getProduct };
 // module.exports.updateSize=updateSize
+
+
+
+
+//--------------------------------------- Updates a product  --------------------------//
+
+const updateProductById = async function (req, res) {
+try {
+    let productId = req.params.productId
+    let data = req.body
+    let files=req.files
+    let {title, description, price, currencyId, currencyFormat,  availableSizes, style, installments, isFreeShipping } = data;
+  
+      if (Object.keys(data).length === 0) {
+      return res.status(400).send({ status: false, msg: "Request body is empty" });
+  };
+    let NewObject={}
+
+  if (!valid.isValidObjectId(productId)) {
+        return res.status(400).send({ status: false, msg: "Product id is not valid" })};
+
+    const CheckProduct=await productModel.findById(productId)
+    if(!CheckProduct){ return res.status(400).send({ status: false, msg: "Product is not Find" })}
+
+    
+
+//----------------------------- Updating title -----------------------------//
+
+if(title ||title===""){
+  title=title.trim()
+     if (!valid.isValid(title)){
+        return res.status(400).send({ status: false, msg: "title is invalid" })};
+     
+      let titleVerify = await productModel.findOne({ title: title });
+    if (titleVerify) {
+      return res.status(400).send({ status: false, msg: "title is already present" })}
+      NewObject.title = title.trim()
+    };
+
+//----------------------------- Updating description -----------------------------//
+
+if(description ||description===""){
+  description=description.trim()
+   if (!valid.isValid(description)){
+      return res.status(400).send({ status: false, msg: "description is invalid" })};
+      NewObject.description = description
+};
+
+//----------------------------- Updating price -----------------------------//
+
+if(price || price===""){
+  price=price.trim()
+    if (priceRegex.test(price) == false){
+      return res.status(400).send({ status: false, message: "you entered a invalid price" })};
+      NewObject.price = price
+    };
+
+//----------------------------- Updating currencyId -----------------------------//
+
+if(currencyId ||currencyId===""){ 
+  currencyId=currencyId.trim()
+    if (!valid.isValid(currencyId)) {
+      return res.status(400).send({ status: false, msg: "currencyId is invalid" }) }
+    if (currencyId !== "INR"){
+      return res.status(400).send({ status: false, msg: "currencyId format is wrong" })}
+      NewObject.currencyId = currencyId;
+    };
+
+//----------------------------- Updating currencyFormat -----------------------------//
+
+if(currencyFormat ||currencyFormat===""){
+  currencyFormat=currencyFormat.trim()
+    if (!valid.isValid(currencyFormat)) {
+      return res.status(400).send({ status: false, msg: "currencyFormat is invalid" })}
+    let checkCurrencyFormat = "₹";
+    if (currencyFormat != checkCurrencyFormat){
+      return res.status(400).send({status: false, message: "you entered a invalid currencyFormat--> currencyFormat should be ₹",})}
+      Object.currencyFormat = currencyFormat;
+  };
+
+//------------------------------- Updating Product Image ----------------------------------//
+
+ if(files[0]) {
+  if(files[0].originalname === "" ){
+   
+    return res.status(400).send({ status: false, msg: " productImage is invalid" })}
+  
+  let safeFile=await uploadFile(files[0]);
+  NewObject.productImage = safeFile}
+
+
+
+//----------------------------- Updating style -----------------------------//
+
+if (style ||style==="") {
+  style=style.trim()
+  if (nameRegex.test(style) == false){
+    return res.status(400).send({ status: false, message: "STyle to enterd is invalid" })}
+    NewObject.style = style;
+}
+
+//----------------------------- Updating installments -----------------------------//
+if (installments || installments === "") {
+  installments=installments.trim()
+  if (!installments)
+    return res.status(400).send({ status: false, message: "Installment is empty" });
+if (installmentRegex.test(installments) == false){
+    return res.status(400).send({status: false,message: "Installment  you entered is invalid"})}
+    NewObject.installments = installments;
+}
+
+//----------------------------- Updating AvailableSizes -----------------------------//
+
+if(availableSizes|| availableSizes===""){
+  availableSizes=availableSizes.trim()
+  if(!valid.isValid(availableSizes)){ 
+     return res.status(400).send({status: false,message: "Available Sizes is invalid"});}
+
+  let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
+  let arrayOfSizes = CheckProduct.availableSizes.concat(availableSizes)
+
+for (let i = 0; i < arrayOfSizes.length; i++) {
+  if (checkSizes.includes(arrayOfSizes[i].trim())) continue;
+else
+  return res.status(400).send({status: false,message: "Sizes should in this ENUM only S/XS/M/X/L/XXL/XL"});
+}
+
+let newSize = [];
+   for (let j = 0; j < arrayOfSizes.length; j++) {
+    if (newSize.includes(arrayOfSizes[j].trim())) continue;
+else newSize.push(arrayOfSizes[j].trim());
+}
+NewObject.availableSizes = newSize;
+}
+
+if(isFreeShipping){
+  if(typeof(isFreeShipping)!==Boolean){
+    return res.status(400).send({ status: false, message: "Free Shipping is Must be A Boolean" });
+  }
+}
+
+const updateProduct=await productModel.findByIdAndUpdate(productId,NewObject,{new :true})
+return res.status(200).send({status:true ,message: "Update is successfully",data:updateProduct});
+
+
+    } catch (error) {
+        res.status(500).send({ status: false, err: error.message });
+    }
+}
+
+
+//-----------------------------Get Product By Id --------------------------------//
+
+const getProductById = async function (req,res){
+  try{
+      let productId = req.params.productId
+      let product = await productModel.findById(productId)
+      let data = {product}
+      res.status(200).send({ status: true,message: 'Success',data:data})
+  }
+  catch(err){
+      res.status(500).send({status:false,message: err.message})
+  }
+}
+
+
+
+
+//---------------------deleteProduct----------------------------///
+
+
+const deleteProduct = async function(req,res){
+  try{
+      let productId = req.params.productId
+      await productModel.findByIdAndUpdate(productId,{$set:{isDeleted:true,deletedAt:new Date()}})
+      res.status(200).send({ status: true,message:'Product deleted'})
+  }
+  catch(err){
+      res.status(500).send({status:false,message: err.message})
+  }
+}
+
+
+
+module.exports = { createProduct, getProduct,updateProductById ,getProductById,deleteProduct};

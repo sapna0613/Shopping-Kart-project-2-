@@ -13,11 +13,15 @@ router.post("/register",userController.createUser)
 router.post("/login",userController.loginUser)
 router.put("/user/:userId/profile",authentication,authorisationbyBId,userController.updateUser)
 router.get("/user/:userId/profile",authentication,userController.getUser)
+
+// ======================================PRODUCT API============================================//
 router.post("/products",productController.createProduct)
-
-
 router.get("/products",productController.getProduct)
 router.put("/productsSize/:productId/size",productController.updateSize)
+router.put("/products/:productId",productController.updateProductById)
+
+router.get("/products/:productId",productController.getProductById)
+router.delete("/product/:productId",productController.deleteProduct)
 
 
 router.all("/*", (req, res) => 
