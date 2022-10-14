@@ -272,7 +272,7 @@ const getProduct = async (req, res) => {
 
 
 
-//--------------------------------------- Updates a product  --------------------------//
+//--------------------------------------- Updates a product --------------------------//
 
 const updateProductById = async function (req, res) {
 try {
@@ -304,7 +304,7 @@ if(title ||title===""){
       let titleVerify = await productModel.findOne({ title: title });
     if (titleVerify) {
       return res.status(400).send({ status: false, msg: "title is already present" })}
-      NewObject.title = title.trim()
+      NewObject.title = title
     };
 
 //----------------------------- Updating description -----------------------------//
@@ -349,15 +349,12 @@ if(currencyFormat ||currencyFormat===""){
   };
 
 //------------------------------- Updating Product Image ----------------------------------//
-
- if(files[0]) {
-  if(files[0].originalname === "" ){
-   
-    return res.status(400).send({ status: false, msg: " productImage is invalid" })}
   
-  let safeFile=await uploadFile(files[0]);
-  NewObject.productImage = safeFile}
+ if(files && files.length>0) {
 
+  let safeFile=await uploadFile(files[0]);
+  NewObject.productImage = safeFile
+ }
 
 
 //----------------------------- Updating style -----------------------------//
@@ -382,32 +379,44 @@ if (installmentRegex.test(installments) == false){
 //----------------------------- Updating AvailableSizes -----------------------------//
 
 if(availableSizes|| availableSizes===""){
-  availableSizes=availableSizes.trim()
-  if(!valid.isValid(availableSizes)){ 
-     return res.status(400).send({status: false,message: "Available Sizes is invalid"});}
+let arr1=availableSizes.split(" ");
+console.log(arr1);
+    let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
 
-  let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-  let arrayOfSizes = CheckProduct.availableSizes.concat(availableSizes)
+    for (let i = 0; i < arr1.length; i++) {
+        if (!checkSizes.includes(arr1[i])) {
+            return res.status(400).send({ status: false, message: "Sizes should in this ENUM only S/XS/M/X/L/XXL/XL", });
+        }
+    }
 
-for (let i = 0; i < arrayOfSizes.length; i++) {
-  if (checkSizes.includes(arrayOfSizes[i].trim())) continue;
-else
-  return res.status(400).send({status: false,message: "Sizes should in this ENUM only S/XS/M/X/L/XXL/XL"});
+    let newSize = [];
+    for (let j = 0; j < arr1.length; j++) {
+        if (newSize.includes(arr1[j].trim())) continue;
+        else newSize.push(arr1[j].trim());
+    }
+
+let dbavailableSizes=CheckProduct.availableSizes;
+    for (ele of newSize) {
+        let index=dbavailableSizes.indexOf(ele)
+        if(index<0){
+            dbavailableSizes.push(ele)
+        }else{
+            dbavailableSizes.splice(index,1)
+        }
+    }
+
+NewObject.availableSizes = dbavailableSizes;
 }
 
-let newSize = [];
-   for (let j = 0; j < arrayOfSizes.length; j++) {
-    if (newSize.includes(arrayOfSizes[j].trim())) continue;
-else newSize.push(arrayOfSizes[j].trim());
-}
-NewObject.availableSizes = newSize;
-}
+//----------------------- Update iFree Shipping ---------------------------------//
 
 if(isFreeShipping){
   if(typeof(isFreeShipping)!==Boolean){
     return res.status(400).send({ status: false, message: "Free Shipping is Must be A Boolean" });
   }
 }
+
+//--------------------------- Updating Product detail in DB -----------------------------------//
 
 const updateProduct=await productModel.findByIdAndUpdate(productId,NewObject,{new :true})
 return res.status(200).send({status:true ,message: "Update is successfully",data:updateProduct});

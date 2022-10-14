@@ -11,7 +11,7 @@ const aws= require("aws-sdk")
 // ======================================USER API============================================//
 router.post("/register",userController.createUser)
 router.post("/login",userController.loginUser)
-router.put("/user/:userId/profile",authentication,authorisationbyBId,userController.updateUser)
+router.put("/user/:userId/profile"/*,authentication,authorisationbyBId*/,userController.updateUser)
 router.get("/user/:userId/profile",authentication,userController.getUser)
 
 // ======================================PRODUCT API============================================//
