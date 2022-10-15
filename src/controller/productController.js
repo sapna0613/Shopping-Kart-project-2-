@@ -275,6 +275,7 @@ let updateSize = async function (req, res) {
     let data = await productModel.findById(req.params.productId)
     // console.log(req.query.availableSizes)
     availableSizes = req.query.availableSizes.split(" ");
+    console.log(availableSizes=="")
     // console.log(availableSizes)
 
     let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
