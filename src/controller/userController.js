@@ -8,10 +8,8 @@ const bcrypt = require('bcrypt');
 const createUser = async (req, res) => {
   try {
     let data = req.body;
-    let { fname, lname, email, phone, password, address } = data;
-    // console.log(typeof data.email);
+    let { fname, lname, email, phone, password } = data;
     let files = req.files
-    // console.log(files[0]);
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, message: "please provide data in request body" })
     }
@@ -76,7 +74,6 @@ const createUser = async (req, res) => {
     }
     // console.log(valid.isValidName(fname))
     if (!valid.isValidName(fname)) {
-
       return res.status(400).send({ status: false, message: " Fname is Not Valid" })
     }
     //---------------------------Validation Lname------------------------------------------//
@@ -154,12 +151,7 @@ const loginUser = async function (req, res) {
     if (!password) {
       return res.status(400).send({ status: false, msg: "password is not present in  request body" })
     }
-    // if (email != "") {
-    //   return res.status(400).send({ status: false, msg: "Email is invalid" })
-    // }
-    // if (password != "") {
-    //   return res.status(400).send({ status: false, msg: "password is invalid" })
-    // }
+
     if (!valid.isValidPassword(password)) {
       return res.status(400).send({ status: false, msg: "password length is not correct" })
     }
@@ -169,7 +161,6 @@ const loginUser = async function (req, res) {
     }
 
     const comparePassword = await bcrypt.compare(password, verifyUser.password)
-
     if (!verifyUser || !comparePassword) return res.status(401).send({ status: false, message: "invalid credentials" })
     let token = jwt.sign(
       {
@@ -194,7 +185,7 @@ const updateUser = async function (req, res) {
     let userId = req.params.userId
     let data = req.body
     let files = req.files
-    let { fname, lname, email, phone, password, address, profileImage } = data
+    let { fname, lname, email, phone, password } = data
 
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, message: "please provide data in request body" })
@@ -362,7 +353,7 @@ const getUser = async function (req, res) {
     if (!valid.isValidObjectId(data)) {
       return res.status(400).send({ status: false, message: "UserId is invailed" })
     }
-    const fetchUser = await userModel.findById({ _id: data })
+    const fetchUser = await userModel.findById(data)
     if (!fetchUser) {
       return res.status(404).send({ status: false, message: "User is not found" })
     }

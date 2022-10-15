@@ -14,16 +14,12 @@ const authentication = (req, res, next) => {
             return res.status(401).send({ status: false, msg: "token is required" });
         } else {
             token = token.split(' ')[1]
-            
             // console.log(token)
         }
         jwt.verify(token, "YousufAbhayRahulAnand", (error, decodedtoken) => {
             if (error) {
-                const msg =
-                    error.message === "jwt expired"
-                        ? "Token is expired"
-                        : "Token is invalid";
-                return res.status(401).send({ status: false, msg });
+                const msg = error.message === "jwt expired"? "Token is expired": "Token is invalid";
+                return res.status(401).send({ status: false, message:msg });
             }
             else {
                 req.token = decodedtoken;
@@ -80,8 +76,8 @@ const authorisationbyBId = async function (req, res, next) {
         if (!userData) {
             return res.status(404).send({ status: false, message: 'No user exists with that id or Might be Deleted' });
         }
-        console.log(userData._id.toString())
-        console.log(decodedtoken.userId)
+        // console.log(userData._id.toString())
+        // console.log(decodedtoken.userId)
         if ((decodedtoken.userId !== userData._id.toString())) { return res.status(403).send({ status: false, message: "You are not a authorized user" }) };
         next();
 
