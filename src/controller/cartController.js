@@ -108,8 +108,6 @@ const createCart = async function (req, res) {
         const createNewCart = await cartModel.findOne({ userId: userId })/*.populate([{ path: "items.productId" }])*/
         return res.status(201).send({ status: true, message: "Success Creat New Cart", data: createNewCart })
 
-
-
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -151,13 +149,15 @@ const updateCart = async function (req, res) {
         let arr = ["productId", "cartId", "removeProduct"]
 
         for (ele of arr) {
-            if (!req.body[ele]) {
-                return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body` });
-            }
+            
             if (ele == "removeProduct") {
+                if(req.body[ele]==undefined||req.body[ele]==="") return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body.` });
                 req.body[ele] = Number(req.body[ele])
                 if (![1, 0].includes(req.body[ele])) return res.status(400).send({ status: false, message: "removeProduct can be 1 and 0 only." });
             } else {
+                if (!req.body[ele]) {
+                    return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body` });
+                }
                 if (!Valid.isValidObjectId(req.body[ele])) return res.status(400).send({ status: false, message: `${ele} is not Valid objectId` });
             }
         }
@@ -184,12 +184,15 @@ const updateCart = async function (req, res) {
             }
         }
  
-        
+        console.log(cart)
         if (isProductAlready == undefined) {
             return res.status(400).send({ status: false, message: `This product is not in cart` })
         }
 
-        let product = await productModel.findById(req.body.productId)
+        let product = await productModel.findOne({_id:req.body.productId,isDeleted:false})
+        if(!product){
+            return res.status(400).send({ status: false, message: `Product does not exist or it may deleted` })
+        }
         console.log(cart)
         let updateProduct;
 
