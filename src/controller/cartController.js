@@ -104,8 +104,6 @@ return res.status(201).send({status: true, message: "Success update Product Quan
     const createNewCart = await cartModel.findOne({ userId: userId })/*.populate([{ path: "items.productId" }])*/
     return res.status(201).send({ status: true, message: "Success Creat New Cart", data: createNewCart })
 
-
-
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -116,18 +114,18 @@ return res.status(201).send({status: true, message: "Success update Product Quan
 const getCart = async function (req, res) {
     try {
         let data = req.query
-        let condition = {isDeleted:false}
+        let condition = { isDeleted: false }
 
-        let {userId} = data
-        if(userId){
-            if(!validId(userId)) return res.status(400).send({status: false,message: "Please provide valid userId"})
+        let { userId } = data
+        if (userId) {
+            if (!validId(userId)) return res.status(400).send({ status: false, message: "Please provide valid userId" })
             condition.userId = userId
         }
         let cart = await cartModel.cart()
         if (!cart) {
-            return res.status(400).json({type: "Invalid",msg: "Cart not Found",})
+            return res.status(400).json({ type: "Invalid", msg: "Cart not Found", })
         }
-        res.status(200).json({status: true,data: cart})
+        res.status(200).json({ status: true, data: cart })
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -147,13 +145,15 @@ const updateCart = async function (req, res) {
         let arr = ["productId", "cartId", "removeProduct"]
 
         for (ele of arr) {
-            if (!req.body[ele]) {
-                return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body` });
-            }
+            
             if (ele == "removeProduct") {
+                if(req.body[ele]==undefined||req.body[ele]==="") return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body.` });
                 req.body[ele] = Number(req.body[ele])
                 if (![1, 0].includes(req.body[ele])) return res.status(400).send({ status: false, message: "removeProduct can be 1 and 0 only." });
             } else {
+                if (!req.body[ele]) {
+                    return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body` });
+                }
                 if (!Valid.isValidObjectId(req.body[ele])) return res.status(400).send({ status: false, message: `${ele} is not Valid objectId` });
             }
         }
@@ -179,12 +179,16 @@ const updateCart = async function (req, res) {
                 isProductAlready = i
             }
         }
-
-        if (isProductAlready<0) {
+ 
+        console.log(cart)
+        if (isProductAlready == undefined) {
             return res.status(400).send({ status: false, message: `This product is not in cart` })
         }
 
-        let product = await productModel.findById(req.body.productId)
+        let product = await productModel.findOne({_id:req.body.productId,isDeleted:false})
+        if(!product){
+            return res.status(400).send({ status: false, message: `Product does not exist or it may deleted` })
+        }
         console.log(cart)
         let updateProduct;
 
@@ -194,13 +198,13 @@ const updateCart = async function (req, res) {
                     { _id: req.body.cartId },
                     {
                         $pull: { items: { productId: req.body.productId } },
-                        $inc: { totalPrice: -product.price , totalItems:-1}
+                        $inc: { totalPrice: -product.price, totalItems: -1 }
                     },
                     { new: true }
                 )
             } else {
                 updateProduct = await cartModel.findOneAndUpdate(
-                    { _id: req.body.cartId,"items.productId":req.body.productId },
+                    { _id: req.body.cartId, "items.productId": req.body.productId },
                     {
                         $set: { "items.$.quantity": cart.items[isProductAlready].quantity - 1 },
                         $inc: { totalPrice: -product.price }
@@ -213,7 +217,7 @@ const updateCart = async function (req, res) {
                 { _id: req.body.cartId },
                 {
                     $pull: { items: { productId: req.body.productId } },
-                    $inc: { totalPrice: -((product.price)*cart.items[isProductAlready].quantity) , totalItems:-1}
+                    $inc: { totalPrice: -((product.price) * cart.items[isProductAlready].quantity), totalItems: -1 }
                 },
                 { new: true }
             )
