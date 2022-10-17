@@ -69,8 +69,8 @@ for (let i = 0; i < findCart.items.length; i++) {
 
 if(isProductAlready > 0){
     const updateProduct = await cartModel.findOneAndUpdate(
-        { userId: userId },
-        {   $set: { items: [{ productId:productId , quantity: newQuantity }] },
+        { userId: userId ,"items.productId":productId},
+        {   $set: { "items.$.quantity": newQuantity } ,
             $inc: { totalPrice: (product.price)*quantity  }},
         { new: true }
     )/*.populate([{ path: "items.productId" }]);*/
@@ -112,11 +112,19 @@ if(isProductAlready > 0){
 
 const getCart = async function (req, res) {
     try {
-        
+        let data = req.query
+        let condition = {isDeleted:false}
 
-
-
-
+        let {userId} = data
+        if(userId){
+            if(!validId(userId)) return res.status(400).send({status: false,message: "Please provide valid userId"})
+            condition.userId = userId
+        }
+        let cart = await cartModel.cart()
+        if (!cart) {
+            return res.status(400).json({type: "Invalid",msg: "Cart not Found",})
+        }
+        res.status(200).json({status: true,data: cart})
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
