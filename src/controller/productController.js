@@ -101,11 +101,13 @@ console.log(arrayOfSizes);
 }
 //############################### Free Shipping ##############################################//
 
-    if(isFreeShipping){
-        if(typeof(isFreeShipping)!==Boolean){
-            return res.status(400).send({ status: false, message: "Free Shipping is Must be A Boolean" });
-        }
-        }
+if(isFreeShipping){
+    isFreeShipping=isFreeShipping.trim()
+    isFreeShipping=isFreeShipping.toLowerCase()
+    let arr=["true","false"]
+    if(!arr.includes(isFreeShipping))return res.status(400).send({ status: false, message: "Free Shipping Must be A Boolean" });
+    objectCreate.isFreeShipping=isFreeShipping
+}
 //####################################  installment (if given)  ######################################//
         if (installments || installments === "") {
             if (!installments)
