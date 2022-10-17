@@ -43,10 +43,11 @@ const createCart = async function (req, res) {
 //************** Cart is Avlabal ********************************/
 
 if (findCart) {
+    console.log(findCart)
     if(!cartId){
-        return res.status(400).send({ status: false, message: "Please provide cat id to add items in the crat" })
+        return res.status(400).send({ status: false, message: "Please provide cart id to add items in the crat" })
     }
-    if(findCart._id.toString !==cartId){
+    if(findCart._id.toString() !==cartId){
         return res.status(400).send({ status: false, message: "Cart id is not Match" })
     }
     
@@ -84,6 +85,10 @@ if(isProductAlready > 0){
 
     return res.status(201).send({status: true, message: "Success Add New Product", data: addProduct })
 }
+}else{
+    if(cartId){
+        return res.status(400).send({ status: false, message: "NO cart is created from this userID" })
+    }
 }
 
     let obj={
