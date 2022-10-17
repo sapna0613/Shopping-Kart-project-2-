@@ -122,13 +122,18 @@ const createProduct = async (req, res) => {
 //################################### avalableSizes ##############################################//
 
         if (!availableSizes)
-            return res
+           { return res
                 .status(400)
-                .send({ status: false, message: "Available Sizes field is Required" });
+                .send({ status: false, message: "Available Sizes field is Required" })}
+if(availableSizes){
+    // console.log(availableSizes);
+    if(availableSizes.length===0){ return res
+        .status(400)
+        .send({ status: false, message: "Available Sizes field is Required 2" })}
 
-        let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
-        let arrayOfSizes = availableSizes.trim().split(" ");
-
+    let checkSizes = ["S", "XS", "M", "X", "L", "XXL", "XL"];
+        let arrayOfSizes = availableSizes.split(" ");
+console.log(arrayOfSizes);
         for (let i = 0; i < arrayOfSizes.length; i++) {
             if (checkSizes.includes(arrayOfSizes[i].trim())) continue;
             else
@@ -146,7 +151,7 @@ const createProduct = async (req, res) => {
       else newSize.push(arrayOfSizes[j].trim());
     }
     objectCreate.availableSizes = newSize;
-
+}
 //############################### Free Shipping ##############################################//
 
     if(isFreeShipping){
@@ -293,7 +298,7 @@ try {
     const CheckProduct=await productModel.findById(productId)
     if(!CheckProduct){ return res.status(400).send({ status: false, message: "Product is not Find" })}
 
-    
+
 
 //----------------------------- Updating title -----------------------------//
 

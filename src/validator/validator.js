@@ -42,6 +42,11 @@ const isValidPincode = function (value) {
   return false;
 };
 
+const isValidNum = function (value) {
+  if ( typeof value === Number || String && /[0-9]/g.test(value)) return true;
+  return false;
+};
+
 const isValidDate = function (value) {
   if (/^(18|19|20)[0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(value))
    return true;
@@ -67,4 +72,4 @@ const isValidSize=function (value){
 
 
 module.exports = { isValid, isValidRequestBody, isValidObjectId, isValidEmail, isValidPassword,
- isValidName, isValidMobile, isValidpin,isValidA,isValidDate,isValidPincode,isValidSize,isValidPrice };
+ isValidName, isValidMobile, isValidpin,isValidA,isValidDate,isValidPincode,isValidSize,isValidPrice,isValidNum};
