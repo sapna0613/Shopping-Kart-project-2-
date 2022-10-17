@@ -43,8 +43,10 @@ const createCart = async function (req, res) {
 //************** Cart is Avlabal ********************************/
 
 if (findCart) {
-
-    if(cartId && findCart._id.toString !==cartId){
+    if(!cartId){
+        return res.status(400).send({ status: false, message: "Please provide cat id to add items in the crat" })
+    }
+    if(findCart._id.toString !==cartId){
         return res.status(400).send({ status: false, message: "Cart id is not Match" })
     }
     
