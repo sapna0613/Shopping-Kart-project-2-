@@ -1,8 +1,6 @@
 const cartModel = require("../models/cartModel");
 const Valid = require("../validator/validator");
 const productModel = require('../models/productModel')
-const { uploadFile } = require("../controller/awsController");
-
 
 
 //########################################## CREATE CART API #########################################################//
@@ -46,7 +44,7 @@ const createCart = async function (req, res) {
 //************** Cart is Available ********************************/
 
 if (findCart) {
-    console.log(findCart)
+
     if (!cartId) {
         return res.status(400).send({ status: false, message: "Please provide cart id to add items in the crat" })
     }
@@ -58,16 +56,15 @@ if (findCart) {
 
     let isProductAlready = 0;
     let newQuantity = 0
-    for (let i = 0; i < findCart.items.length; i++) {
 
+    for (let i = 0; i < findCart.items.length; i++) {
     if (findCart.items[i].productId.toString() == productId) {
-        isProductAlready++
-        newQuantity = (findCart.items[i].quantity) + quantity
-        console.log("done 1");
+            isProductAlready++
+            newQuantity = (findCart.items[i].quantity) + quantity
     }
 }
 
-
+//**************** IF PRODUCT IS ALREADY AVAILABAL**********************//
 
 if(isProductAlready > 0){
     const updateProduct = await cartModel.findOneAndUpdate(
@@ -101,7 +98,7 @@ return res.status(201).send({status: true, message: "Success update Product Quan
         totalItems: 1
     }
     await cartModel.create(obj)
-    const createNewCart = await cartModel.findOne({ userId: userId })/*.populate([{ path: "items.productId" }])*/
+    const createNewCart = await cartModel.findOne({ userId: userId }).populate([{ path: "items.productId" }])
     return res.status(201).send({ status: true, message: "Success Creat New Cart", data: createNewCart })
 
     } catch (err) {
@@ -113,19 +110,15 @@ return res.status(201).send({status: true, message: "Success update Product Quan
 
 const getCart = async function (req, res) {
     try {
-        let data = req.query
-        let condition = { isDeleted: false }
+        let userId = req.params.userId
 
-        let { userId } = data
-        if (userId) {
-            if (!Valid.validId(userId)) return res.status(400).send({ status: false, message: "Please provide valid userId" })
-            condition.userId = userId
-        }
-        let cart = await cartModel.cart()
-        if (!cart) {
-            return res.status(400).json({ type: "Invalid", msg: "Cart not Found", })
-        }
-        res.status(200).json({ status: true, data: cart })
+      //----------------------------- Getting cart Detail -----------------------------//
+      const cart = await cartModel.findOne({ userId: userId , isDeleted:false })
+                    .populate([{ path: "items.productId", select: { title: 1, productImage: 1, price: 1, isFreeShipping: 1 } }])
+      if (!cart) {
+          return res.status(404).send({ status: false, message: "cart not found" })
+      }
+      res.status(200).send({ status: true, message: "Find your cart details below: ", data: cart });
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -134,8 +127,7 @@ const getCart = async function (req, res) {
 
 
 
-
-//#################################################   ######################################################//
+//################################################# UPDATE CART  ######################################################//
 
 const updateCart = async function (req, res) {
     try {
@@ -147,7 +139,8 @@ const updateCart = async function (req, res) {
         for (ele of arr) {
             
             if (ele == "removeProduct") {
-                if(req.body[ele]==undefined||req.body[ele]==="") return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body.` });
+                if(req.body[ele]==undefined||req.body[ele]==="")
+                    return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body.` });
                 req.body[ele] = Number(req.body[ele])
                 if (![1, 0].includes(req.body[ele])) return res.status(400).send({ status: false, message: "removeProduct can be 1 and 0 only." });
             } else {
@@ -173,8 +166,6 @@ const updateCart = async function (req, res) {
         let isProductAlready;
 
         for (let i = 0; i < cart.items.length; i++) {
-            // if(PId=="undefined"){PId==0}else{PId.toString()}
-            // console.log(findCart.items[i].productId);
             if (cart.items[i].productId.toString() == req.body.productId) {
                 isProductAlready = i
             }
@@ -231,7 +222,7 @@ const updateCart = async function (req, res) {
     }
 }
 
-//###############################################   #################################################//
+//############################################### DELETE CART #################################################//
 
 const deleteCart = async function (req, res) {
     try {
