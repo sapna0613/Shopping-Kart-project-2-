@@ -122,7 +122,7 @@ const getCart = async function (req, res) {
 
         let { userId } = data
         if (userId) {
-            if (!validId(userId)) return res.status(400).send({ status: false, message: "Please provide valid userId" })
+            if (!Valid.validId(userId)) return res.status(400).send({ status: false, message: "Please provide valid userId" })
             condition.userId = userId
         }
         let cart = await cartModel.cart()
