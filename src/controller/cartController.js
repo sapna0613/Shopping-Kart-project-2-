@@ -127,8 +127,7 @@ const getCart = async function (req, res) {
 
 
 
-
-//#################################################   ######################################################//
+//################################################# UPDATE CART  ######################################################//
 
 const updateCart = async function (req, res) {
     try {
@@ -140,7 +139,8 @@ const updateCart = async function (req, res) {
         for (ele of arr) {
             
             if (ele == "removeProduct") {
-                if(req.body[ele]==undefined||req.body[ele]==="") return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body.` });
+                if(req.body[ele]==undefined||req.body[ele]==="")
+                    return res.status(400).send({ status: false, message: `Please provide ${ele} field in request body.` });
                 req.body[ele] = Number(req.body[ele])
                 if (![1, 0].includes(req.body[ele])) return res.status(400).send({ status: false, message: "removeProduct can be 1 and 0 only." });
             } else {
@@ -166,8 +166,6 @@ const updateCart = async function (req, res) {
         let isProductAlready;
 
         for (let i = 0; i < cart.items.length; i++) {
-            // if(PId=="undefined"){PId==0}else{PId.toString()}
-            // console.log(findCart.items[i].productId);
             if (cart.items[i].productId.toString() == req.body.productId) {
                 isProductAlready = i
             }
@@ -224,7 +222,7 @@ const updateCart = async function (req, res) {
     }
 }
 
-//###############################################   #################################################//
+//############################################### DELETE CART #################################################//
 
 const deleteCart = async function (req, res) {
     try {
