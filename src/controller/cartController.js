@@ -214,7 +214,7 @@ const updateCart = async function (req, res) {
             )
         }
 
-        return res.status(400).send({ status: true, message: updateProduct })
+        return res.status(200).send({ status: true, message: updateProduct })
 
 
     } catch (err) {
