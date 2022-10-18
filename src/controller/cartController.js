@@ -113,7 +113,7 @@ const getCart = async function (req, res) {
         let userId = req.params.userId
 
       //----------------------------- Getting cart Detail -----------------------------//
-      const cart = await cartModel.findOne({ userId: userId , isDeleted:false })
+      const cart = await cartModel.findOne({ userId: userId})
                     .populate([{ path: "items.productId", select: { title: 1, productImage: 1, price: 1, isFreeShipping: 1 } }])
       if (!cart) {
           return res.status(404).send({ status: false, message: "cart not found" })
@@ -234,9 +234,7 @@ const deleteCart = async function (req, res) {
     if (!cart) {
         return res.status(404).send({ status: false, message: "Cart not exist for this userId" })
     }
-        return res.status(200).send({ status: true, message: "deleted successfully", data: cart })
-
-
+        return res.status(204).send({ status: true, message: "deleted successfully", data: cart })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }

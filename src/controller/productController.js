@@ -15,7 +15,7 @@ const createProduct = async (req, res) => {
     try {
         let data = req.body;
         let {
-            title,description,price,currencyId,currencyFormat,availableSizes,style,installments,isFreeShipping,} = data;
+            title,description,price,currencyId,currencyFormat,availableSizes,style,installments,isFreeShipping} = data;
         if (Object.keys(data).length === 0) {
             return res.status(400).send({ status: false, msg: "Request body is empty" });
         }
