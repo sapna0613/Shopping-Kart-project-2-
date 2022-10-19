@@ -183,7 +183,8 @@ const updateCart = async function (req, res) {
         console.log(cart)
         let updateProduct;
 
-        if (req.body.removeProduct == 1) {
+        if (req.body.removeProduct == 1) {  ///removeProduct == 1   => qantity ghtanyega
+                                            //// removeProduct == 0   => product ko delete karega
             if (cart.items[isProductAlready].quantity == 1) {
                 updateProduct = await cartModel.findOneAndUpdate(
                     { _id: req.body.cartId },
@@ -203,7 +204,9 @@ const updateCart = async function (req, res) {
                     { new: true }
                 )
             }
-        } else {
+        }
+        
+        else {
             updateProduct = await cartModel.findOneAndUpdate(
                 { _id: req.body.cartId },
                 {
