@@ -37,8 +37,6 @@ const createOrder = async function (req, res) {
         }
         let totalQuantity = 0
 
-        
-
         for (let ele of cart.items) {
             totalQuantity = totalQuantity + ele.quantity;
         }
@@ -47,7 +45,7 @@ const createOrder = async function (req, res) {
 
 
         let savedOrder = await orderModel.create(order);
-        await cartModel.findByIdAndUpdate({ _id: req.body.cartId }, { items: [], totalItems: 0, totalPrice: 0 }, { new: true })
+        await cartModel.findByIdAndUpdate({ _id: req.body.cartId }, { items: [], totalItems: 0, totalPrice: 0 })
 
         return res.status(201).send({ status: true, message: "success", data: savedOrder });
 
