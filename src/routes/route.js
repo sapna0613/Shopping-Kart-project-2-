@@ -19,7 +19,6 @@ router.get("/user/:userId/profile",authentication,userController.getUser)
 // ======================================PRODUCT APIs ============================================//
 router.post("/products",productController.createProduct)
 router.get("/products",productController.getProduct)
-// router.put("/productsSize/:productId/size",productController.updateSize)
 router.put("/products/:productId",productController.updateProductById)
 
 router.get("/products/:productId",productController.getProductById)
@@ -31,7 +30,7 @@ router.get("/users/:userId/cart",cartController.getCart)
 router.put("/users/:userId/cart",cartController.updateCart)
 router.delete("/users/:userId/cart",cartController.deleteCart)
 
-//=================================== CART APIs  ================================================//
+//=================================== ORDER APIs  ================================================//
 router.post("/users/:userId/orders",orderController.createOrder)
 
 router.put("/users/:userId/orders",orderController.updateOrder)
