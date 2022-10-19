@@ -4,11 +4,11 @@ const userController= require("../controller/userController")
 const cartController=require("../controller/cartController")
 const productController= require("../controller/productController")
 const orderController= require("../controller/orderController")
-const awsController= require("../controller/awsController")
 
-const{authentication,authorisation,authorisationbyBId}=require("../middleware/middle")
 
-const aws= require("aws-sdk")
+const{authentication,authorisationbyBId}=require("../middleware/middle")
+
+
 
 // ======================================USER APIs============================================//
 router.post("/register",userController.createUser)
