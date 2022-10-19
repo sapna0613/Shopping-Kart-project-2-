@@ -394,6 +394,13 @@ const deleteProduct = async function(req,res){
         return res.status(404).send({ status: false, message: "Product Already deleted" })
     }
     await productModel.findByIdAndUpdate(productId,{$set:{isDeleted:true,deletedAt:new Date()}})
+    await cartModel.updateMany(
+        {"items.productId": productId},
+        {
+            $pull: { items: { productId:productId } },
+            $inc: { totalPrice: -((product.price) * cart.items[isProductAlready].quantity), totalItems: -1 }
+        }
+    )
       res.status(200).send({ status: true,message:"Product Deleted Successfully"})
     }
 
