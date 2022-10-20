@@ -4,9 +4,6 @@ const Valid = require("../validator/validator");
 const productModel = require('../models/productModel')
 const { uploadFile } = require("./awsController");
 
-var nameRegex = /^[a-zA-Z\s]*$/;
-var priceRegex = /^[1-9]\d*(\.\d+)?$/;
-
 //########################################## CEREAT ORDER  #######################################//
 
 const createOrder = async function (req, res) {
@@ -14,9 +11,11 @@ const createOrder = async function (req, res) {
         if (!req.body.cartId) {
             return res.status(400).send({ status: false, message: "please provide cartId in request body " })
         }
+
         if(!Valid.isValidObjectId(req.body.cartId)){
             return res.status(400).send({ status: false, message: "please provide valid cartId in request body " })
         }
+
         let cancellable;
         if (req.body.hasOwnProperty("cancellable")) {
             if(typeof req.body.cancellable!="boolean"){
