@@ -12,22 +12,23 @@ const createOrder = async function (req, res) {
             return res.status(400).send({ status: false, message: "please provide cartId in request body " })
         }
 
-        if(!Valid.isValidObjectId(req.body.cartId)){
+        if (!Valid.isValidObjectId(req.body.cartId)) {
             return res.status(400).send({ status: false, message: "please provide valid cartId in request body " })
         }
 
         let cancellable;
         if (req.body.hasOwnProperty("cancellable")) {
-            if(typeof req.body.cancellable!="boolean"){
-            return res.status(400).send({ status: false, message: "Cancellable must be in boolean." })
+            if (typeof req.body.cancellable != "boolean") {
+                return res.status(400).send({ status: false, message: "Cancellable must be in boolean." })
             }
             cancellable = req.body.cancellable
         } else {
             cancellable = true
         }
         let cart = await cartModel.findById(req.body.cartId).select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 }).lean()
-        
-        if(!cart){
+        // console.log({...cart});
+
+        if (!cart) {
             return res.status(400).send({ status: false, message: "NO cart exist from this cartId" });
         }
 
@@ -53,7 +54,7 @@ const createOrder = async function (req, res) {
 
 
         let savedOrder = await orderModel.create(order);
-        await cartModel.findByIdAndUpdate( req.body.cartId , { items: [], totalItems: 0, totalPrice: 0 })
+        await cartModel.findByIdAndUpdate(req.body.cartId, { items: [], totalItems: 0, totalPrice: 0 })
 
         return res.status(201).send({ status: true, message: "success", data: savedOrder });
 
@@ -71,45 +72,62 @@ const updateOrder = async function (req, res) {
         const userId = req.params.userId
         const { orderId, status } = req.body
 
-//----------------------------- Validating body -----------------------------//
-    if (!isValidBody(req.body)) {
-        return res.status(400).send({ status: false, message: 'provide appropriate orderId in request body' })
-    }
+        //----------------------------- Validating body -----------------------------//
+        if (!Valid.isValidRequestBody(req.body)) {
+            return res.status(400).send({ status: false, message: 'provide appropriate orderId and status in request body' })
+        }
+
+        if (!orderId) {
+            return res.status(400).send({ status: false, message: 'provide appropriate orderId in request body' })
+        }
+        if (!Valid.isValidObjectId(orderId)) {
+            return res.status(400).send({ status: false, message: "please provide valid orderId in request body " })
+        }
+
+        if (!status) {
+            return res.status(400).send({ status: false, message: 'provide appropriate status in request body' })
+        }
+        if (!["pending", "completed", "cancelled"].includes(status)) {
+            return res.status(400).send({ status: false, message: "Please provide status from these options only ('pending', 'completed' or 'cancelled')." });
+        }
 
 
-    const findOrder = await OrderModel.findOne({ _id: orderId, userId: userId })
-    if (!findOrder)
-    return res.status(404).send({ status: false, message: `Order details is not found with the given OrderId: ${userId}` })
+        const findOrder = await orderModel.findOne({ _id: orderId, userId: userId })
+        if (!findOrder)
+            return res.status(404).send({ status: false, message: `Order details is not found with the given OrderId: ${userId}` })
 
 
-    if (findOrder.cancellable == false) {
+        if (findOrder.cancellable == false) {
 
-        if (!isValid(status))
-    return res.status(400).send({ status: false, message: "Status is required and the fields will be 'pending', 'completed', 'cancelled' only" });
 
-    let statusIndex = ["pending", "completed", "cancelled"];
-    
-    if (statusIndex.indexOf(status) == -1)
-        return res.status(400).send({ status: false, message: "Please provide status from these options only ('pending', 'completed' or 'cancelled')" });
+            if (status == 'completed') {
 
-    if (status == 'completed') {
+                if (findOrder.status == 'pending') {
+                    const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
+                    return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
+                }
+                if (findOrder.status == 'completed') {
+                    return res.status(400).send({ status: false, message: "The status is already completed" });
+                }
+                if (findOrder.status == 'cancelled') {
+                    return res.status(400).send({ status: false, message: "The status is cancelled, you cannot change the status" });
+                }
+            }
 
-        if (findOrder.status == 'pending') {
-            const updateStatus = await OrderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status, isDeleted: true, deletedAt: Date.now() } }, { new: true })
+            if (status == 'cancelled') {
+                return res.status(400).send({ status: false, message: "Cannot be cancelled as it is not cancellable" })
+            }
+        } else {
+            if (findOrder.status == 'cancelled') {
+                return res.status(400).send({ status: false, message: "The status is cancelled, you cannot change the status" });
+            }
+            if (findOrder.status == 'completed') {
+                return res.status(400).send({ status: false, message: "The status is already completed" });
+            }
+            const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
             return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
-        }
-        if (findOrder.status == 'completed') {
-            return res.status(400).send({ status: false, message: "The status is already completed" });
-        }
-        if (findOrder.status == 'cancelled') {
-            return res.status(400).send({ status: false, message: "The status is cancelled, you cannot change the status" });
-        }
-    }
 
-    if (status == 'cancelled') {
-        return res.status(400).send({ status: false, message: "Cannot be cancelled as it is not cancellable" })
-    }
-}
+        }
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
