@@ -68,12 +68,48 @@ const createOrder = async function (req, res) {
 
 const updateOrder = async function (req, res) {
     try {
+        const userId = req.params.userId
+        const { orderId, status } = req.body
+
+//----------------------------- Validating body -----------------------------//
+    if (!isValidBody(req.body)) {
+        return res.status(400).send({ status: false, message: 'provide appropriate orderId in request body' })
+    }
 
 
+    const findOrder = await OrderModel.findOne({ _id: orderId, userId: userId })
+    if (!findOrder)
+    return res.status(404).send({ status: false, message: `Order details is not found with the given OrderId: ${userId}` })
 
 
+    if (findOrder.cancellable == false) {
 
+        if (!isValid(status))
+    return res.status(400).send({ status: false, message: "Status is required and the fields will be 'pending', 'completed', 'cancelled' only" });
 
+    let statusIndex = ["pending", "completed", "cancelled"];
+    
+    if (statusIndex.indexOf(status) == -1)
+        return res.status(400).send({ status: false, message: "Please provide status from these options only ('pending', 'completed' or 'cancelled')" });
+
+    if (status == 'completed') {
+
+        if (findOrder.status == 'pending') {
+            const updateStatus = await OrderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status, isDeleted: true, deletedAt: Date.now() } }, { new: true })
+            return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
+        }
+        if (findOrder.status == 'completed') {
+            return res.status(400).send({ status: false, message: "The status is already completed" });
+        }
+        if (findOrder.status == 'cancelled') {
+            return res.status(400).send({ status: false, message: "The status is cancelled, you cannot change the status" });
+        }
+    }
+
+    if (status == 'cancelled') {
+        return res.status(400).send({ status: false, message: "Cannot be cancelled as it is not cancellable" })
+    }
+}
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
