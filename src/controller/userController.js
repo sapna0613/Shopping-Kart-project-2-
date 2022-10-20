@@ -128,11 +128,10 @@ const createUser = async (req, res) => {
 
 
     let savedData = await userModel.create(data);
-    return res.status(201).send({ status: true, message: "User Successfully created", data: savedData })
-
+    return res.status(201).send({ status: true, message: "Success", data: savedData })
 
   } catch (error) {
-    res.status(500).send({ status: false, err: error.message });
+    res.status(500).send({ status: false, message: error.message });
   }
 };
 
@@ -143,25 +142,25 @@ const loginUser = async function (req, res) {
     let data = req.body
     let { email, password } = data
     if (Object.keys(data).length === 0) {
-      return res.status(400).send({ status: false, msg: "Request Body is empty" })
+      return res.status(400).send({ status: false, message: "Request Body is empty" })
     }
     if (!email) {
-      return res.status(400).send({ status: false, msg: "Email is not present in  request body" })
+      return res.status(400).send({ status: false, message: "Email is not present in  request body" })
     }
     if (!password) {
-      return res.status(400).send({ status: false, msg: "password is not present in  request body" })
+      return res.status(400).send({ status: false, message: "password is not present in  request body" })
     }
 
     if (!valid.isValidPassword(password)) {
-      return res.status(400).send({ status: false, msg: "password length is not correct" })
+      return res.status(400).send({ status: false, message: "password length is not correct" })
     }
     let verifyUser = await userModel.findOne({ email: email })
     if (!verifyUser) {
-      return res.status(404).send({ status: false, msg: "invalid credentials" })
+      return res.status(404).send({ status: false, message: "No user found with this email." })
     }
 
     const comparePassword = await bcrypt.compare(password, verifyUser.password)
-    if (!verifyUser || !comparePassword) return res.status(401).send({ status: false, message: "invalid credentials" })
+    if (!comparePassword) return res.status(401).send({ status: false, message: "invalid credentials" })
     let token = jwt.sign(
       {
         userId: verifyUser._id.toString(),
@@ -169,10 +168,10 @@ const loginUser = async function (req, res) {
       },
       "YousufAbhayRahulAnand"
     )
-    return res.status(200).send({ status: false, msg: "user successfuly login", data: { userId: verifyUser._id, token: token } })
+    return res.status(200).send({ status: false, message: "Success", data: { userId: verifyUser._id, token: token } })
 
   } catch (error) {
-    res.status(500).send({ status: false, err: error.message });
+    res.status(500).send({ status: false, message: error.message });
   }
 };
 
@@ -194,10 +193,10 @@ const updateUser = async function (req, res) {
 
     //--------------------checking User -----------------------//
     if (!valid.isValidObjectId(userId)) {
-      return res.status(400).send({ status: false, msg: "User id is not valid" })
+      return res.status(400).send({ status: false, message: "User id is not valid" })
     }
     const checkUser = await userModel.findById(userId)
-    if (!checkUser) { return res.status(404).send({ status: false, msg: "User not found" }) }
+    if (!checkUser) { return res.status(404).send({ status: false, message: "User not found" }) }
 
     //----------------------------- Validation Profile Image -----------------------------// 
     if (files[0]) {
@@ -226,7 +225,7 @@ const updateUser = async function (req, res) {
       }
       const emailData = await userModel.findOne({ email: email })
       if (emailData) {
-        return res.status(409).send({ status: false, message: "This Email already exists" })
+        return res.status(400).send({ status: false, message: "This Email already exists" })
       }
       checkUser.email = email.trim()
     }
@@ -237,7 +236,7 @@ const updateUser = async function (req, res) {
       }
       const PhoneData = await userModel.findOne({ phone: phone })
       if (PhoneData) {
-        return res.status(409).send({ status: false, message: "This phone number already exists" })
+        return res.status(400).send({ status: false, message: "This phone number already exists" })
       }
       checkUser.phone = phone.trim()
     }
@@ -334,11 +333,10 @@ const updateUser = async function (req, res) {
 
 
     const update = await userModel.findByIdAndUpdate(userId, checkUser, { new: true })
-    return res.status(200).send({ status: true, message: "successfully updated", data: update });
-
+    return res.status(200).send({ status: true, message: "Success", data: update });
 
   } catch (error) {
-    res.status(501).send({ status: false, err: error.message });
+    res.status(501).send({ status: false, message: error.message });
   }
 }
 
@@ -357,7 +355,7 @@ const getUser = async function (req, res) {
     if (!fetchUser) {
       return res.status(404).send({ status: false, message: "User is not found" })
     }
-    return res.status(200).send({ status: true, message: "User profile details", data: fetchUser })
+    return res.status(200).send({ status: true, message: "Success", data: fetchUser })
   } catch (error) {
     return res.status(500).send({ status: false, message: error.message })
   }
