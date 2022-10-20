@@ -168,7 +168,7 @@ const loginUser = async function (req, res) {
       },
       "YousufAbhayRahulAnand"
     )
-    return res.status(200).send({ status: false, message: "Success", data: { userId: verifyUser._id, token: token } })
+    return res.status(200).send({ status: true, message: "Success", data: { userId: verifyUser._id, token: token } })
 
   } catch (error) {
     res.status(500).send({ status: false, message: error.message });
