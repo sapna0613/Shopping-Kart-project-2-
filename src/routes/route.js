@@ -37,10 +37,6 @@ router.put("/users/:userId/orders",authentication,authorisationbyBId,orderContro
 
 
 
-
-
-
-
 router.all("/*", (req, res) => 
 { console.log(req.params.productId)
     res.status(400).send({ status: false, message: "Endpoint is not correct" }) })
