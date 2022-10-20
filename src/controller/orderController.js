@@ -1,8 +1,8 @@
 const cartModel = require('../models/cartModel');
 const orderModel = require('../models/orderModel')
 const Valid = require("../validator/validator");
-const productModel = require('../models/productModel')
-const { uploadFile } = require("./awsController");
+
+
 
 //########################################## CEREAT ORDER  #######################################//
 
@@ -49,13 +49,20 @@ const createOrder = async function (req, res) {
             totalQuantity = totalQuantity + ele.quantity;
         }
 
-        let order = { ...cart, totalQuantity: totalQuantity, cancellable: cancellable, status: "pending", deletedAt: null, isDeleted: false }
+        let order = { 
+            ...cart, 
+            totalQuantity: totalQuantity, 
+            cancellable: cancellable, 
+            status: "pending", 
+            deletedAt: null, 
+            isDeleted: false 
+        }
 
 
         let savedOrder = await orderModel.create(order);
         await cartModel.findByIdAndUpdate(req.body.cartId, { items: [], totalItems: 0, totalPrice: 0 })
 
-        return res.status(201).send({ status: true, message: "success", data: savedOrder });
+        return res.status(201).send({ status: true, message: "Success", data: savedOrder });
 
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
