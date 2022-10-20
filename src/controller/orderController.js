@@ -26,7 +26,6 @@ const createOrder = async function (req, res) {
             cancellable = true
         }
         let cart = await cartModel.findById(req.body.cartId).select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 }).lean()
-        // console.log({...cart});
 
         if (!cart) {
             return res.status(400).send({ status: false, message: "NO cart exist from this cartId" });
@@ -87,10 +86,10 @@ const updateOrder = async function (req, res) {
         if (!status) {
             return res.status(400).send({ status: false, message: 'provide appropriate status in request body' })
         }
-        if (!["pending", "completed", "cancelled"].includes(status)) {
-            return res.status(400).send({ status: false, message: "Please provide status from these options only ('pending', 'completed' or 'cancelled')." });
+        if (!["completed", "cancelled"].includes(status)) {
+            return res.status(400).send({ status: false, message: "Please provide status from these options only ( 'completed' or 'cancelled')." });
         }
-
+  
 
         const findOrder = await orderModel.findOne({ _id: orderId, userId: userId })
         if (!findOrder)
@@ -109,9 +108,6 @@ const updateOrder = async function (req, res) {
                 if (findOrder.status == 'completed') {
                     return res.status(400).send({ status: false, message: "The status is already completed" });
                 }
-                if (findOrder.status == 'cancelled') {
-                    return res.status(400).send({ status: false, message: "The status is cancelled, you cannot change the status" });
-                }
             }
 
             if (status == 'cancelled') {
@@ -124,8 +120,9 @@ const updateOrder = async function (req, res) {
             if (findOrder.status == 'completed') {
                 return res.status(400).send({ status: false, message: "The status is already completed" });
             }
-            const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
-            return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
+
+        const updateStatus = await orderModel.findOneAndUpdate({ _id: orderId }, { $set: { status: status } }, { new: true })
+        return res.status(200).send({ status: true, message: 'Success', data: updateStatus });
 
         }
 
