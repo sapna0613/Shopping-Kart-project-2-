@@ -99,8 +99,8 @@ const updateOrder = async function (req, res) {
   
 
         const findOrder = await orderModel.findOne({ _id: orderId, userId: userId })
-        if (!findOrder)
-            return res.status(404).send({ status: false, message: `Order details is not found with the given OrderId: ${userId}` })
+        if (!findOrder || findOrder.isDeleted==true)
+            return res.status(404).send({ status: false, message: `Order details is not found with the given OrderId: ${userId} or my be deleted` })
 
 
         if (findOrder.cancellable == false) {
