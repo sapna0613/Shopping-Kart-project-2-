@@ -5,7 +5,8 @@ const cartModel = require('../models/cartModel');
 
 var nameRegex = /^[a-zA-Z\s]*$/;
 var priceRegex = /^[1-9]\d*(\.\d+)?$/;
-var installmentRegex = /\d/;
+var installmentRegex = /^[1-9][0-9]?$/;
+
 
 
 //---------------------------- Create Product ----------------------------------------------///
