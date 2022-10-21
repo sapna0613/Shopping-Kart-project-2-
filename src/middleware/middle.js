@@ -9,12 +9,10 @@ const userModel = require("../models/UserModel")
 const authentication = (req, res, next) => {
     try {
         let token = req.headers.authorization;
-        // console.log(token)
         if (!token) {
             return res.status(401).send({ status: false, msg: "token is required" });
         } else {
             token = token.split(' ')[1]
-            // console.log(token)
         }
         jwt.verify(token, "YousufAbhayRahulAnand", (error, decodedtoken) => {
             if (error) {
@@ -23,7 +21,6 @@ const authentication = (req, res, next) => {
             }
             else {
                 req.token = decodedtoken;
-                // console.log(decodedtoken)
                 next();
             }
         });
@@ -49,9 +46,9 @@ const authorisationbyBId = async function (req, res, next) {
         if (!userData) {
             return res.status(404).send({ status: false, message: 'No user exists with that id or Might be Deleted' });
         }
-        // console.log(userData._id.toString())
-        // console.log(decodedtoken.userId)
-        if ((decodedtoken.userId !== userData._id.toString())) { return res.status(403).send({ status: false, message: "You are not a authorized user" }) };
+        if ((decodedtoken.userId !== userData._id.toString())) {
+             return res.status(403).send({ status: false, message: "You are not a authorized user" }) 
+        };
         next();
 
     } catch (error) {
@@ -62,5 +59,4 @@ const authorisationbyBId = async function (req, res, next) {
 
 // ==============================================================================================================================
 
-//exporting functions
 module.exports = { authentication, authorisationbyBId }

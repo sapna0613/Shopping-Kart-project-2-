@@ -18,34 +18,34 @@ const createProduct = async (req, res) => {
         let {
             title, description, price, currencyId, currencyFormat, availableSizes, style, installments, isFreeShipping } = data;
         if (Object.keys(data).length === 0) {
-            return res.status(400).send({ status: false, msg: "Request body is empty" });
+            return res.status(400).send({ status: false, message: "Request body is empty" });
         }
         let objectCreate = {};
 
         let requiredField = ["title", "description", "price", "currencyId", "currencyFormat",];
         for (field of requiredField) {
             if (!data[field]) {
-                return res.status(400).send({ status: false, msg: `${field} is not present in request body`, });
+                return res.status(400).send({status: false,message: `${field} is not present in request body`,});
             }
         }
 
-        if (!valid.isValid(title)) return res.status(400).send({ status: false, msg: "title is invalid" });
+        if (!valid.isValid(title)) return res.status(400).send({ status: false, message: "title is invalid" });
         objectCreate.title = title;
 
-        if (!valid.isValid(description)) return res.status(400).send({ status: false, msg: "description is invalid" });
+        if (!valid.isValid(description)) return res.status(400).send({ status: false, message: "description is invalid" });
         objectCreate.description = description;
 
         if (priceRegex.test(price) == false) return res.status(400).send({ status: false, message: "you entered a invalid price" });
         objectCreate.price = price;
 
-        if (!valid.isValid(currencyId)) return res.status(400).send({ status: false, msg: "currencyId is invalid" });
-        if (!valid.isValid(currencyFormat)) return res.status(400).send({ status: false, msg: "currencyFormat is invalid" });
-        if (currencyId !== "INR") return res.status(400).send({ status: false, msg: "currencyId format is wrong" });
+        if (!valid.isValid(currencyId)) return res.status(400).send({ status: false, message: "currencyId is invalid" });
+        if (!valid.isValid(currencyFormat))return res.status(400).send({ status: false, message: "currencyFormat is invalid" });
+        if (currencyId !== "INR")return res.status(400).send({ status: false, message: "currencyId format is wrong" });
         objectCreate.currencyId = currencyId;
 
         let titleVerify = await productModel.findOne({ title: title });
         if (titleVerify) {
-            return res.status(400).send({ status: false, msg: "title is already present" });
+            return res.status(400).send({ status: false, message: "title is already present" });
         }
         //############################### currencyFormat ##################################//
 
@@ -114,7 +114,7 @@ const createProduct = async (req, res) => {
         let productCreate = await productModel.create(objectCreate);
         return res.status(201).send({ status: true, message: "Success", data: productCreate, });
     } catch (error) {
-        res.status(500).send({ status: false, err: error.message });
+        res.status(500).send({ status: false, message: error.message });
     }
 };
 
@@ -182,7 +182,7 @@ const getProduct = async (req, res) => {
         if (savedData.length == 0) {
             return res.status(404).send({ status: false, message: "No data found" });
         }
-        return res.status(200).send({ status: true, data: savedData });
+        return res.status(200).send({ status: true,message: "Success", data: savedData });
     } catch (err) {
         res.status(500).send({ status: false, message: err.message });
     }
