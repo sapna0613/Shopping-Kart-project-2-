@@ -229,7 +229,7 @@ const deleteCart = async function (req, res) {
     try {
         const userId = req.params.userId
 
-    const cart = await cartModel.findOneAndUpdate({ userId: userId }, { items: [], totalItems: 0, totalPrice: 0 }, { new: true })
+    const cart = await cartModel.findOneAndUpdate({ userId: userId }, { items: [], totalItems: 0, totalPrice: 0 })
 
     if (!cart) {
         return res.status(404).send({ status: false, message: "Cart not exist for this userId" })

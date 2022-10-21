@@ -207,7 +207,7 @@ const updateProductById = async function (req, res) {
             return res.status(400).send({ status: false, message: "Product id is not valid" })
         };
 
-        const CheckProduct = await productModel.findById(productId)
+        const CheckProduct = await productModel.findOne({_id:productId,isDeleted:false})
         if (!CheckProduct) { return res.status(400).send({ status: false, message: "Product is not Find" }) }
 
 
@@ -365,7 +365,7 @@ const getProductById = async function (req, res) {
         if (!valid.isValidObjectId(productId)) {
             return res.status(400).send({ status: false, message: "please enter valid productId" })
         }
-        let product = await productModel.findById({ _id: productId, isDeleted: false })
+        let product = await productModel.findOne({ _id: productId, isDeleted: false })
 
         if (!product) {
             return res.status(404).send({ status: false, message: "Product not found" })
