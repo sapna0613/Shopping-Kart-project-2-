@@ -10,7 +10,7 @@ app.use(multer().any())
 
 app.use(bodyParser.json());
 
-mongoose.connect("mongodb+srv://Nishant-R:cMVSc6ePV6V4dr03@cluster0.rembes2.mongodb.net/group6Database", {
+mongoose.connect("mongodb://localhost:27017", {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDb is connected"))
@@ -20,6 +20,6 @@ mongoose.connect("mongodb+srv://Nishant-R:cMVSc6ePV6V4dr03@cluster0.rembes2.mong
 app.use('/', route);
 
 
-app.listen(  3000, function () {
-    console.log('Express app running on port ' + ( 3000))
+app.listen(  3001, function () {
+    console.log('Express app running on port ' + ( 3001))
 });

@@ -17,7 +17,7 @@ const createOrder = async function (req, res) {
         }
 
         let cancellable;
-        if (req.body.hasOwnProperty("cancellable")) {
+        if (req.body.cancellable) {
             if (typeof req.body.cancellable != "boolean") {
                 return res.status(400).send({ status: false, message: "Cancellable must be in boolean." })
             }
@@ -25,7 +25,7 @@ const createOrder = async function (req, res) {
         } else {
             cancellable = true
         }
-        let cart = await cartModel.findById(req.body.cartId).select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 }).lean()
+        let cart = await cartModel.findById(req.body.cartId).select({ _id: 0, createdAt: 0, updatedAt: 0, __v: 0 }) //.lean()
 
         if (!cart) {
             return res.status(400).send({ status: false, message: "NO cart exist from this cartId" });

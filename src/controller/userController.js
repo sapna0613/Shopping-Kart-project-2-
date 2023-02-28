@@ -9,14 +9,18 @@ const createUser = async (req, res) => {
   try {
     let data = req.body;
     let { fname, lname, email, phone, password } = data;
+    
     let files = req.files
+    
     if (!valid.isValidRequestBody(data)) {
       return res.status(400).send({ status: false, message: "please provide data in request body" })
     }
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++Address Validation+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     let requiredField = ["fname", "lname", "email", "phone", "password", "address"]
 
-    for (field of requiredField) {
+    for (field of requiredField) 
+    
+    {
       if (!data[field]) {
         return res.status(400).send({ status: false, message: `Please provide ${field} field in request body` })
       }
@@ -109,7 +113,7 @@ const createUser = async (req, res) => {
       return res.status(400).send({ status: false, message: "Please provide unique phone" })
     }
     //----------------------------Password---------------------------------------------------//
-    password = password.trim()
+    data.password = password.trim()
     if (!valid.isValidPassword(password)) {
       return res.status(400).send({ status: false, message: "Password is Not Valid" })
     }
@@ -117,7 +121,7 @@ const createUser = async (req, res) => {
     const saltRounds = 10;
     bcrypt.hash(password, saltRounds, function (err, hash) {
       data.password = hash;
-      // console.log(hash)
+       console.log(hash)
     });
     //---------------------------Validation Profile Image------------------------------------------//
     if (!files[0]) {
@@ -166,7 +170,7 @@ const loginUser = async function (req, res) {
         userId: verifyUser._id.toString(),
         expiresIn: "7d"
       },
-      "YousufAbhayRahulAnand"
+      "sapnarikhadi"
     )
     return res.status(200).send({ status: true, message: "Success", data: { userId: verifyUser._id, token: token } })
 

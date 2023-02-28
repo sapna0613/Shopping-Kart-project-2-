@@ -12,9 +12,9 @@ const authentication = (req, res, next) => {
         if (!token) {
             return res.status(401).send({ status: false, msg: "token is required" });
         } else {
-            token = token.split(' ')[1]
+            token = token.split(' ')[1] //bearer 'ahdfksjhhfkjhaskdfhwierhksafdhkjhjfdk'
         }
-        jwt.verify(token, "YousufAbhayRahulAnand", (error, decodedtoken) => {
+        jwt.verify(token, "sapnarikhadi", (error, decodedtoken) => {
             if (error) {
                 const msg = error.message === "jwt expired"? "Token is expired": "Token is invalid";
                 return res.status(401).send({ status: false, message:msg });

@@ -52,7 +52,7 @@ if (findCart) {
         return res.status(400).send({ status: false, message: "Cart id is not Match" })
     }
 
-//--------------------- Prodect is alredy in cart -------------------------------------//
+//--------------------- Product is alredy in cart -------------------------------------//
 
     let isProductAlready = 0;
     let newQuantity = 0
